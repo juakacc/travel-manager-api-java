@@ -1,10 +1,9 @@
-CREATE TABLE veiculo ( 
+CREATE TABLE motorista ( 
 	id BIGINT(20) PRIMARY KEY AUTO_INCREMENT , 
 	nome VARCHAR(255) NOT NULL , 
-	placa VARCHAR(10) NOT NULL , 
-	renavam VARCHAR(20) NOT NULL , 
-	marca VARCHAR(255) NULL , 
-	modelo VARCHAR(255) NULL , 
-	quilometragem DECIMAL NOT NULL DEFAULT '0' , 
-	disponivel BOOLEAN NOT NULL DEFAULT TRUE 
+	apelido VARCHAR(255) NOT NULL , 
+	cnh VARCHAR(20) NOT NULL , 
+	categoria VARCHAR(10) NOT NULL , 
+	telefone VARCHAR(255) NOT NULL , 
+	senha VARCHAR(255) NOT NULL 
 ) ENGINE = InnoDB CHARSET=utf8;

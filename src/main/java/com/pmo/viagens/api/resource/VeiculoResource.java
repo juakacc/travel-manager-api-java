@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pmo.viagens.api.model.Veiculo;
 import com.pmo.viagens.api.repository.VeiculoRepository;
+import com.pmo.viagens.api.service.VeiculoService;
 
 @RestController
 @RequestMapping("/veiculos")
@@ -25,6 +26,9 @@ public class VeiculoResource {
 	
 	@Autowired
 	private VeiculoRepository repository;
+	
+	@Autowired
+	private VeiculoService service;
 
 	@GetMapping
 	public ResponseEntity<List<Veiculo>> getAll() {
@@ -59,7 +63,7 @@ public class VeiculoResource {
 	
 	@PostMapping
 	public ResponseEntity<Veiculo> adicionar(@RequestBody Veiculo veiculo) {
-		Veiculo veiculoSalvo = this.repository.save(veiculo);
+		Veiculo veiculoSalvo = this.service.salvar(veiculo);
 		return ResponseEntity.status(HttpStatus.CREATED).body(veiculoSalvo);
 	}
 }
