@@ -1,10 +1,12 @@
 package com.pmo.viagens.api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +31,14 @@ public class ViagemService {
 	public Viagem iniciarViagem(Viagem viagem) {
 		Veiculo veiculo = this.veiculoService.getPorId(viagem.getVeiculo().getId());
 		
-		if (veiculo == null || !veiculo.getDisponivel())
-			throw new EmptyResultDataAccessException(1);
-		
+		if (veiculo == null || !veiculo.getDisponivel()) {
+			throw new DataIntegrityViolationException("Veículo não encontrado ou indisponível");
+		}
 		Motorista motorista = this.motoristaService.getPorId(viagem.getMotorista().getId());
 		
-		if (motorista == null || this.getViagemEmAndamentoDeMotorista(motorista.getId()).isPresent())
-			throw new EmptyResultDataAccessException(1); // ele ja esta ocupado
-		
+		if (motorista == null || this.getViagemEmAndamentoDeMotorista(motorista.getId()).isPresent()) {
+			throw new DataIntegrityViolationException("Veículo não encontrado ou em viagem");
+		}		
 		Viagem viagemSalva = this.viagemRepository.save(viagem);
 		
 		veiculo.setDisponivel(false); // veiculo agora fica indisponível
@@ -64,6 +66,7 @@ public class ViagemService {
 
 	private Viagem buscarViagemPorId(Long id) {
 		Optional<Viagem> viagemSalva = this.viagemRepository.findById(id);
+		
 		if (viagemSalva.isEmpty())
 			throw new EmptyResultDataAccessException(1);
 		return viagemSalva.get();
@@ -77,5 +80,16 @@ public class ViagemService {
 				return Optional.of(viagem);
 		}
 		return Optional.empty();
+	}
+
+	public List<Viagem> getViagensConcluidas() {
+		List<Viagem> viagens = new ArrayList<>();
+		
+		for (Viagem viagem : this.viagemRepository.findAll()) {
+			if (viagem.getChegada() != null) {
+				viagens.add(viagem);
+			}
+		}
+		return viagens;
 	}
 }

@@ -1,5 +1,7 @@
 package com.pmo.viagens.api.resource;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,11 +36,39 @@ public class ViagemResource {
 	private ViagemService service;
 	
 	@GetMapping
-	public ResponseEntity<List<Viagem>> listar() {
+	public ResponseEntity<List<Viagem>> listar(@RequestParam(required = false) String date) {
 		List<Viagem> findAll = this.repository.findAll();
+		List<Viagem> selecionadas = new ArrayList<>();
+		
+		if (date != null) {
+			date = date.replace('T', ' ');
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
+			System.out.println("Date Time: " + dateTime);
+			
+			for (Viagem viagem : findAll) {
+				if (dateTime.isAfter(viagem.getSaida())) {
+					if (viagem.getChegada() != null) { // já foi concluída
+						if (dateTime.isBefore(viagem.getChegada())) {
+							selecionadas.add(viagem);		
+						}
+					} else { // ainda não concluída
+						selecionadas.add(viagem);
+					}					
+				}
+			}
+			return ResponseEntity.ok(selecionadas);
+		}		
 		return ResponseEntity.ok(findAll);
 	}
 	
+	@GetMapping("/{id}")
+	public ResponseEntity<Viagem> getById(@PathVariable Long id) {
+		Optional<Viagem> findAll = this.repository.findById(id);
+		
+		return findAll.isPresent() ? ResponseEntity.ok(findAll.get()) : ResponseEntity.notFound().build();
+	}
+		
 	@PostMapping
 	public ResponseEntity<Viagem> salvar(@RequestBody Viagem viagem) {
 		Viagem viagemSalva = this.service.iniciarViagem(viagem);
@@ -70,6 +101,12 @@ public class ViagemResource {
 			return ResponseEntity.ok(viagem.get());
 		
 		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("/concluidas")
+	public ResponseEntity<List<Viagem>> listarViagensConcluidas() {
+		List<Viagem> viagens = this.service.getViagensConcluidas();
+		return ResponseEntity.ok(viagens);
 	}
 	
 	@PutMapping("/concluir/{id}")
