@@ -1,5 +1,6 @@
 package com.pmo.viagens.api.exceptionhandler;
 
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,6 +46,16 @@ public class ViagemApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, req);
 	}
+	
+	@ExceptionHandler({ DateTimeParseException.class })
+	public ResponseEntity<Object> handleDateTimeParseException(DateTimeParseException ex, WebRequest req) {
+		String mensagemUsuario = "Data inválida";
+		String mensagemDesenvolvedor = ex.getMessage();
+		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
+		
+		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, req);
+	}
+	
 
 	public class Erro {
 
