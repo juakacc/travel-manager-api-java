@@ -3,6 +3,8 @@ package com.pmo.viagens.api.model;
 import java.math.BigDecimal;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +26,17 @@ public class Veiculo {
 	private String modelo;
 	private BigDecimal quilometragem;
 	private Boolean disponivel;
+
+	@Enumerated(EnumType.STRING)
+	private TipoCNH cnh_requerida;
+
+	public TipoCNH getCnh_requerida() {
+		return cnh_requerida;
+	}
+
+	public void setCnh_requerida(TipoCNH cnh_requerida) {
+		this.cnh_requerida = cnh_requerida;
+	}
 
 	public Long getId() {
 		return id;

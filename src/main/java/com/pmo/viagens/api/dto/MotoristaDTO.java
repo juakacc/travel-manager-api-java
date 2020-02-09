@@ -1,6 +1,7 @@
 package com.pmo.viagens.api.dto;
 
 import com.pmo.viagens.api.model.Motorista;
+import com.pmo.viagens.api.model.TipoCNH;
 
 public class MotoristaDTO {
 
@@ -8,10 +9,10 @@ public class MotoristaDTO {
 	private String nome;
 	private String apelido;
 	private String cnh;
-	private String categoria;
+	private TipoCNH categoria;
 	private String telefone;
 
-	private MotoristaDTO(Long id, String nome, String apelido, String cnh, String categoria, String telefone) {
+	private MotoristaDTO(Long id, String nome, String apelido, String cnh, TipoCNH categoria, String telefone) {
 		this.id = id;
 		this.nome = nome;
 		this.apelido = apelido;
@@ -57,11 +58,11 @@ public class MotoristaDTO {
 		this.cnh = cnh;
 	}
 
-	public String getCategoria() {
+	public TipoCNH getCategoria() {
 		return categoria;
 	}
 
-	public void setCategoria(String categoria) {
+	public void setCategoria(TipoCNH categoria) {
 		this.categoria = categoria;
 	}
 

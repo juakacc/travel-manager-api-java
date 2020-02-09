@@ -43,11 +43,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			try {
 				username = jwtTokenUtil.getUserNameFromToken(token);
 			} catch (IllegalArgumentException e) {
+//				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Token inválido");
 				System.err.println("Token inválido...");
 			} catch (ExpiredJwtException e) {
+//				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Token expirado");
 				System.err.println("Token expirado...");
 			}
 		} else {
+//			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Token não inicia com Bearer");
 			System.err.println("Token não inicia com Bearer...");
 		}
 

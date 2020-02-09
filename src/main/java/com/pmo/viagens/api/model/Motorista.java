@@ -1,6 +1,8 @@
 package com.pmo.viagens.api.model;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,7 +19,9 @@ public class Motorista {
 	private String nome;
 	private String apelido;
 	private String cnh;
-	private String categoria;
+	
+	@Enumerated(EnumType.STRING)
+	private TipoCNH categoria;
 	private String telefone;
 	private String senha;
 
@@ -53,11 +57,11 @@ public class Motorista {
 		this.cnh = cnh;
 	}
 
-	public String getCategoria() {
+	public TipoCNH getCategoria() {
 		return categoria;
 	}
 
-	public void setCategoria(String categoria) {
+	public void setCategoria(TipoCNH categoria) {
 		this.categoria = categoria;
 	}
 

@@ -1,5 +1,6 @@
 package com.pmo.viagens.api.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
@@ -35,6 +36,25 @@ public class Viagem {
 	@ManyToOne
 	@JoinColumn(name = "id_motorista")
 	private Motorista motorista;
+
+	private BigDecimal km_inicial;
+	private BigDecimal km_final;
+
+	public BigDecimal getKm_inicial() {
+		return km_inicial;
+	}
+
+	public void setKm_inicial(BigDecimal km_inicial) {
+		this.km_inicial = km_inicial;
+	}
+
+	public BigDecimal getKm_final() {
+		return km_final;
+	}
+
+	public void setKm_final(BigDecimal km_final) {
+		this.km_final = km_final;
+	}
 
 	public Long getId() {
 		return id;

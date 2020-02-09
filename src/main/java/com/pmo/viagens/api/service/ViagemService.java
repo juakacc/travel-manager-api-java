@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.pmo.viagens.api.model.Motorista;
+import com.pmo.viagens.api.model.TipoCNH;
 import com.pmo.viagens.api.model.Veiculo;
 import com.pmo.viagens.api.model.Viagem;
 import com.pmo.viagens.api.model.ViagemConcluida;
@@ -29,25 +30,53 @@ public class ViagemService {
 	private MotoristaService motoristaService;
 	
 	public Viagem iniciarViagem(Viagem viagem) {
-		Veiculo veiculo = this.veiculoService.getPorId(viagem.getVeiculo().getId());
+		Veiculo veiculo = veiculoService.getPorId(viagem.getVeiculo().getId());
 		
 		if (veiculo == null || !veiculo.getDisponivel()) {
 			throw new DataIntegrityViolationException("Veículo não encontrado ou indisponível");
 		}
-		Motorista motorista = this.motoristaService.getPorId(viagem.getMotorista().getId());
+		Motorista motorista = motoristaService.getPorId(viagem.getMotorista().getId());
 		
-		if (motorista == null || this.getViagemEmAndamentoDeMotorista(motorista.getId()).isPresent()) {
-			throw new DataIntegrityViolationException("Veículo não encontrado ou em viagem");
-		}		
-		Viagem viagemSalva = this.viagemRepository.save(viagem);
+		if (motorista == null || this.getViagemEmAndamentoDeMotorista(motorista).isPresent()) {
+			throw new DataIntegrityViolationException("Motorista não encontrado ou em viagem");
+		}
+		
+		if (!cnh_valida(motorista.getCategoria(), veiculo.getCnh_requerida())) {
+			throw new DataIntegrityViolationException(motorista.getNome() + " não tem habilitação para pilotar esse veículo. "
+					+ "É necessário habilitação " + veiculo.getCnh_requerida());
+		}
+				
+		Viagem viagemSalva = viagemRepository.save(viagem);
 		
 		veiculo.setDisponivel(false); // veiculo agora fica indisponível
-		Veiculo veiculoSalvo = this.veiculoService.salvar(veiculo);
+		Veiculo veiculoSalvo = veiculoService.salvar(veiculo);
 		viagemSalva.setVeiculo(veiculoSalvo);
 			
 		return viagemSalva;
 	}
 	
+	private boolean cnh_valida(TipoCNH cnh, TipoCNH cnh_requerida) {
+		if (cnh == cnh_requerida) return true;
+		
+		if (cnh == null || cnh_requerida == null) return false;
+		
+		switch (cnh_requerida) {
+		case A:
+			return cnh == TipoCNH.AB || cnh == TipoCNH.AC || cnh == TipoCNH.AD || cnh == TipoCNH.AE;
+		case B:
+			return cnh == TipoCNH.AB || cnh == TipoCNH.AC || cnh == TipoCNH.AD || cnh == TipoCNH.AE ||
+					cnh == TipoCNH.C || cnh == TipoCNH.D || cnh == TipoCNH.E;
+		case C:
+			return cnh == TipoCNH.AC || cnh == TipoCNH.AD || cnh == TipoCNH.AE || cnh == TipoCNH.D || cnh == TipoCNH.E;
+		case D:
+			return cnh == TipoCNH.AD || cnh == TipoCNH.E;
+		case E:
+			return cnh == TipoCNH.AE;			
+		default:
+			return false;
+		}
+	}
+
 	public Viagem concluirViagem(Long id, ViagemConcluida viagemConcluida) {
 		Viagem viagemSalva = buscarViagemPorId(id);
 		BeanUtils.copyProperties(viagemConcluida.getViagem(), viagemSalva, "id");
@@ -80,6 +109,10 @@ public class ViagemService {
 				return Optional.of(viagem);
 		}
 		return Optional.empty();
+	}
+	
+	public Optional<Viagem> getViagemEmAndamentoDeMotorista(Motorista motorista) {
+		return this.getViagemEmAndamentoDeMotorista(motorista.getId());
 	}
 
 	public List<Viagem> getViagensConcluidas() {

@@ -64,14 +64,14 @@ public class ViagemResource {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Viagem> getById(@PathVariable Long id) {
-		Optional<Viagem> findAll = this.repository.findById(id);
+		Optional<Viagem> findAll = repository.findById(id);
 		
 		return findAll.isPresent() ? ResponseEntity.ok(findAll.get()) : ResponseEntity.notFound().build();
 	}
 		
 	@PostMapping
 	public ResponseEntity<Viagem> salvar(@RequestBody Viagem viagem) {
-		Viagem viagemSalva = this.service.iniciarViagem(viagem);
+		Viagem viagemSalva = service.iniciarViagem(viagem);
 		return ResponseEntity.status(HttpStatus.CREATED).body(viagemSalva);
 	}
 	
