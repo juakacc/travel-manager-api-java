@@ -14,7 +14,6 @@ import com.pmo.viagens.api.model.Motorista;
 import com.pmo.viagens.api.model.TipoCNH;
 import com.pmo.viagens.api.model.Veiculo;
 import com.pmo.viagens.api.model.Viagem;
-import com.pmo.viagens.api.model.ViagemConcluida;
 import com.pmo.viagens.api.repository.ViagemRepository;
 
 @Service
@@ -77,16 +76,16 @@ public class ViagemService {
 		}
 	}
 
-	public Viagem concluirViagem(Long id, ViagemConcluida viagemConcluida) {
+	public Viagem concluirViagem(Long id, Viagem viagem) {
 		Viagem viagemSalva = buscarViagemPorId(id);
-		BeanUtils.copyProperties(viagemConcluida.getViagem(), viagemSalva, "id");
+		BeanUtils.copyProperties(viagem, viagemSalva, "id");
 		Viagem novaViagem = this.viagemRepository.save(viagemSalva);
 		
 		Veiculo veiculo = this.veiculoService.getPorId(viagemSalva.getVeiculo().getId());
 		
-		if (viagemConcluida.getViagem().getChegada() != null) { // entregando
+		if (viagem.getChegada() != null) { // entregando
 			veiculo.setDisponivel(true); // veiculo volta a ficar disponivel
-			veiculo.setQuilometragem(viagemConcluida.getQuilometragem());
+			veiculo.setQuilometragem(viagem.getKm_final());
 			Veiculo veiculoSalvo = this.veiculoService.salvar(veiculo);
 			novaViagem.setVeiculo(veiculoSalvo);
 		}		

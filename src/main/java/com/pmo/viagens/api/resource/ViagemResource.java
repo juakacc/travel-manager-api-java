@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pmo.viagens.api.model.Viagem;
-import com.pmo.viagens.api.model.ViagemConcluida;
 import com.pmo.viagens.api.repository.ViagemRepository;
 import com.pmo.viagens.api.service.ViagemService;
 
@@ -110,7 +109,7 @@ public class ViagemResource {
 	}
 	
 	@PutMapping("/concluir/{id}")
-	public ResponseEntity<Viagem> concluirViagem(@PathVariable Long id, @RequestBody ViagemConcluida viagem) {
+	public ResponseEntity<Viagem> concluirViagem(@PathVariable Long id, @RequestBody Viagem viagem) {
 		Viagem viagemSalva = this.service.concluirViagem(id, viagem);
 		return ResponseEntity.ok(viagemSalva);
 	}
